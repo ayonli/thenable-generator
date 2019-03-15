@@ -15,6 +15,23 @@
   "scripts": {
     "test": "tsc -p test & mocha"
   },
+  "keywords": [
+    "thenable",
+    "generator",
+    "iterator",
+    "asyncIterator",
+    "AsyncFunction",
+    "AsyncGenerator"
+  ],
   "author": "Ayon Lee <i@hyurl.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/hyurl/thenable-generator",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyurl/thenable-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Hyurl/thenable-generator/issues",
+    "email": "i@hyurl.com"
+  }
 }
