@@ -8,7 +8,7 @@ export declare interface Thenable<T = any> extends PromiseLike<T> {
     ): PromiseLike<R1 | R2>;
 }
 
-export declare abstract class ThenableGenerator { }
+export declare abstract class ThenableGenerator<T = any> { }
 
 export declare interface ThenableGenerator<T = any> extends Thenable<T>, Iterator<T> {
     next(value?: T): IteratorResult<T>;
@@ -24,7 +24,7 @@ export declare interface ThenableAsyncGenerator<T = any> extends Thenable<T>, As
     [Symbol.asyncIterator](): this;
 }
 
-export namespace ThenableGenerator {
+export declare namespace ThenableGenerator {
     function create<T = any>(
         fn: (...args: any[]) => AsyncIterable<T> | Promise<T>
     ): (...args: any[]) => ThenableAsyncGenerator<T>;
@@ -33,13 +33,5 @@ export namespace ThenableGenerator {
         fn: (...args: any[]) => T | Iterable<T>
     ): (...args: any[]) => ThenableGenerator<T>;
 }
-
-// export declare function createThenableGenerator<T = any>(
-//     fn: (...args: any[]) => AsyncIterable<T>
-// ): (...args: any[]) => ThenableAsyncGenerator<T>;
-
-// export declare function createThenableGenerator<T = any>(
-//     fn: (...args: any[]) => T | Promise<T> | Iterable<T>
-// ): (...args: any[]) => ThenableGenerator<T>;
 
 export default ThenableGenerator;

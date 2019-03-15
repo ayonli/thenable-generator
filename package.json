@@ -4,7 +4,6 @@
   "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
   "main": "index.js",
   "types": "index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.3",
