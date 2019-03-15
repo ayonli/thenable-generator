@@ -10,7 +10,7 @@ the statement, the generator returns/yields different values.
 ## Example
 
 ```typescript
-import { ThenableGenerator } from "..";
+import { ThenableGenerator } from "thenable-generator";
 
 var normalFn = ThenableGenerator.create(() => {
     return "Hello, World!";
