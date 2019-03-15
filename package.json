@@ -1,0 +1,21 @@
+{
+  "name": "thenable-generator",
+  "version": "0.1.0",
+  "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.3",
+    "mocha": "^6.0.2",
+    "source-map-support": "^0.5.11",
+    "tslib": "^1.9.3",
+    "typescript": "^3.3.3333"
+  },
+  "scripts": {
+    "test": "tsc -p test & mocha"
+  },
+  "author": "Ayon Lee <i@hyurl.com>",
+  "license": "MIT"
+}
