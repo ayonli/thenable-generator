@@ -24,9 +24,9 @@ class ThenableGenerator {
 
         if (!this[target] || this[status] === "closed") {
             res = Promise.resolve();
-        } else if (this[target].then) {
+        } else if (typeof this[target].then === "function") {
             res = this[target];
-        } else if (this[target].next) {
+        } else if (typeof this[target].next === "function") {
             res = processIterator(this[target]);
         } else {
             res = Promise.resolve(this[target]);
@@ -45,9 +45,9 @@ class ThenableGenerator {
 
         if (!this[target] || this[status] === "closed") {
             res = { value: void 0, done: true };
-        } else if (this[target].next) {
+        } else if (typeof this[target].next === "function") {
             res = this[target].next(value);
-        } else if (this[target].then) {
+        } else if (typeof this[target].then === "function") {
             res = this[target].then(value => ({ value, done: true }));
         } else {
             res = { value: this[target], done: true };
@@ -66,9 +66,9 @@ class ThenableGenerator {
     return(value) {
         this[status] = "closed";
 
-        if (this[target] && this[target].return) {
+        if (this[target] && typeof this[target].return === "function") {
             return this[target].return(value);
-        } else if (this[target] && this[target].then) {
+        } else if (this[target] && typeof this[target].then === "function") {
             return this[target].then(() => ({ value, done: true }));
         } else {
             return { value, done: true };
@@ -81,7 +81,7 @@ class ThenableGenerator {
     throw(err) {
         this[status] = "closed";
 
-        if (this[target] && this[target].throw) {
+        if (this[target] && typeof this[target].throw === "function") {
             return this[target].throw(err);
         } else {
             throw err;
