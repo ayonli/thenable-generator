@@ -7,11 +7,13 @@ if (!Symbol.asyncIterator) {
 
 const source = exports.source = Symbol("GeneratorSource");
 const status = exports.status = Symbol("GeneratorStatus");
+const result = exports.result = Symbol("GeneratorResult");
 
 class Thenable {
     constructor(source) {
         this[exports.source] = source;
         this[status] = "suspended";
+        this[result] = void 0;
     }
 
     /**
@@ -23,7 +25,7 @@ class Thenable {
         let res;
 
         if (!this[source] || this[status] === "closed") {
-            res = Promise.resolve();
+            res = Promise.resolve(this[result]);
         } else if (this[status] === "errored") {
             res = Promise.reject(this[source]);
         } else if (typeof this[source].then === "function") {
@@ -55,7 +57,10 @@ class ThenableGenerator extends Thenable {
             res = { value: this[source], done: true };
         }
 
-        (res.done === true) && (this[status] = "closed");
+        if (res.done === true) {
+            this[status] = "closed";
+            this[result] = res.value;
+        }
 
         return res;
     }
@@ -107,7 +112,11 @@ class ThenableAsyncGenerator extends Thenable {
         }
 
         return res.then(res => {
-            (res.done === true) && (this[status] = "closed");
+            if (res.done === true) {
+                this[status] = "closed";
+                this[result] = res.value;
+            }
+
             return res;
         });
     }
@@ -117,6 +126,7 @@ class ThenableAsyncGenerator extends Thenable {
      */
     return(value) {
         this[status] = "closed";
+        this[result] = value;
 
         if (this[source] && typeof this[source].return === "function") {
             return this[source].return(value);

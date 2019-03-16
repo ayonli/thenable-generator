@@ -27,14 +27,16 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
         assert.strictEqual(await gen("Hello", "World"), "Hello World");
     });
 
-    it("should yield values and be traveled in a for...of... loop as expected", () => {
+    it("should yield values and be traveled in a for...of... loop as expected", async () => {
         let values = [];
+        let iter = gen();
 
-        for (let item of gen()) {
+        for (let item of iter) {
             values.push(item);
         }
 
         assert.deepStrictEqual(values, ["Hello", "World"]);
+        assert.strictEqual(await iter, "Hello, World!");
     });
 
     it("should implement next() method as suggested", () => {
@@ -105,12 +107,14 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
 
     it("should yield values and be traveled in a for await...of... loop as expected", async () => {
         let values = [];
+        let iter = gen();
 
-        for await (let item of gen()) {
+        for await (let item of iter) {
             values.push(item);
         }
 
         assert.deepStrictEqual(values, ["Hello", "World"]);
+        assert.strictEqual(await iter, "Hello, World!");
     });
 
     it("should implement next() method as suggested", async () => {
@@ -183,12 +187,14 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
 
     it("should not yield values in a for...of... loop as expected", async () => {
         let values = [];
+        let iter = gen();
 
-        for await (let item of gen()) {
+        for await (let item of iter) {
             values.push(item);
         }
 
         assert.deepStrictEqual(values, []);
+        assert.strictEqual(await iter, "Hello, World!");
     });
 
     it("should implement next() method as suggested", async () => {
@@ -256,14 +262,16 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.strictEqual(await gen("Hello", "World"), "Hello World");
     });
 
-    it("should yield values and be traveled in a for...of... loop as expected", () => {
+    it("should yield values and be traveled in a for...of... loop as expected", async () => {
         let values = [];
+        let iter = gen();
 
-        for (let item of gen()) {
+        for (let item of iter) {
             values.push(item);
         }
 
         assert.deepStrictEqual(values, []);
+        assert.strictEqual(await iter, "Hello, World!");
     });
 
     it("should implement next() method as suggested", () => {

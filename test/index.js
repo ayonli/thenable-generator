@@ -21,13 +21,15 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     it("should pass arguments as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen("Hello", "World"), "Hello World");
     }));
-    it("should yield values and be traveled in a for...of... loop as expected", () => {
+    it("should yield values and be traveled in a for...of... loop as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         let values = [];
-        for (let item of gen()) {
+        let iter = gen();
+        for (let item of iter) {
             values.push(item);
         }
         assert.deepStrictEqual(values, ["Hello", "World"]);
-    });
+        assert.strictEqual(yield iter, "Hello, World!");
+    }));
     it("should implement next() method as suggested", () => {
         let iterator = gen();
         let items = [];
@@ -86,20 +88,22 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
     it("should yield values and be traveled in a for await...of... loop as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         var e_1, _a;
         let values = [];
+        let iter = gen();
         try {
-            for (var _b = tslib_1.__asyncValues(gen()), _c; _c = yield _b.next(), !_c.done;) {
-                let item = _c.value;
+            for (var iter_1 = tslib_1.__asyncValues(iter), iter_1_1; iter_1_1 = yield iter_1.next(), !iter_1_1.done;) {
+                let item = iter_1_1.value;
                 values.push(item);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                if (iter_1_1 && !iter_1_1.done && (_a = iter_1.return)) yield _a.call(iter_1);
             }
             finally { if (e_1) throw e_1.error; }
         }
         assert.deepStrictEqual(values, ["Hello", "World"]);
+        assert.strictEqual(yield iter, "Hello, World!");
     }));
     it("should implement next() method as suggested", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         let iterator = gen();
@@ -158,20 +162,22 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
     it("should not yield values in a for...of... loop as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         var e_2, _a;
         let values = [];
+        let iter = gen();
         try {
-            for (var _b = tslib_1.__asyncValues(gen()), _c; _c = yield _b.next(), !_c.done;) {
-                let item = _c.value;
+            for (var iter_2 = tslib_1.__asyncValues(iter), iter_2_1; iter_2_1 = yield iter_2.next(), !iter_2_1.done;) {
+                let item = iter_2_1.value;
                 values.push(item);
             }
         }
         catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
-                if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                if (iter_2_1 && !iter_2_1.done && (_a = iter_2.return)) yield _a.call(iter_2);
             }
             finally { if (e_2) throw e_2.error; }
         }
         assert.deepStrictEqual(values, []);
+        assert.strictEqual(yield iter, "Hello, World!");
     }));
     it("should implement next() method as suggested", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         let iterator = gen();
@@ -224,13 +230,15 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
     it("should pass arguments as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen("Hello", "World"), "Hello World");
     }));
-    it("should yield values and be traveled in a for...of... loop as expected", () => {
+    it("should yield values and be traveled in a for...of... loop as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         let values = [];
-        for (let item of gen()) {
+        let iter = gen();
+        for (let item of iter) {
             values.push(item);
         }
         assert.deepStrictEqual(values, []);
-    });
+        assert.strictEqual(yield iter, "Hello, World!");
+    }));
     it("should implement next() method as suggested", () => {
         let iterator = gen();
         let items = [];
