@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import { ThenableGenerator, ThenableIterator } from "..";
+import ThenableGenerator, { ThenableIterator } from "..";
 import * as assert from "assert";
 
 describe("Create ThenableGenerator by a GeneratorFunction", () => {

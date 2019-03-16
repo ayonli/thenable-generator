@@ -10,7 +10,7 @@ the statement, the generator returns/yields different values.
 ## Example
 
 ```typescript
-import { ThenableGenerator } from "thenable-generator";
+import ThenableGenerator from "thenable-generator";
 
 var normalFn = ThenableGenerator.create(() => {
     return "Hello, World!";
@@ -52,3 +52,5 @@ var asyncGenFn = ThenableGenerator.create(async function* () {
     }
 })();
 ```
+
+For full API, please checkout [Declarations](./index.d.ts).
