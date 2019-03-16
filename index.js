@@ -35,7 +35,7 @@ class ThenableIterator {
             res = Promise.resolve(this[source]);
         }
 
-        this[status] === "closed";
+        this[status] = "closed";
 
         return res.then(onfulfilled, onrejected);
     }
