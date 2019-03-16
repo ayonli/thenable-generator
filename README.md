@@ -1,4 +1,4 @@
-# ThenableGeneratorFunction
+# Thenable Generator
 
 **Create generators implemented the `PromiseLike` interface so that they can**
 **be awaited in async contexts.**
