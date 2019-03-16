@@ -59,7 +59,7 @@ class ThenableIterator {
         }
 
         if (res.done === true) {
-            this[status] === "closed";
+            this[status] = "closed";
         }
 
         return res;
