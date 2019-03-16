@@ -5,12 +5,13 @@ if (!Symbol.asyncIterator) {
     Symbol.asyncIterator = Symbol("Symbol.asyncIterator");
 }
 
-const target = exports.target = Symbol("ThenableGenerator.target");
+const source = exports.source = Symbol("ThenableGenerator.source");
 const status = exports.status = Symbol("ThenableGenerator.status");
+const GeneratorFunction = (function* () { }).constructor;
 
-class ThenableGenerator {
-    constructor(target) {
-        this[exports.target] = target;
+class ThenableIterator {
+    constructor(source) {
+        this[exports.source] = source;
         this[status] = "suspended";
     }
 
@@ -22,14 +23,16 @@ class ThenableGenerator {
     then(onfulfilled, onrejected) {
         let res;
 
-        if (!this[target] || this[status] === "closed") {
+        if (!this[source] || this[status] === "closed") {
             res = Promise.resolve();
-        } else if (typeof this[target].then === "function") {
-            res = this[target];
-        } else if (typeof this[target].next === "function") {
-            res = processIterator(this[target]);
+        } else if (this[status] === "errored") {
+            res = Promise.reject(this[source]);
+        } else if (typeof this[source].then === "function") {
+            res = this[source];
+        } else if (typeof this[source].next === "function") {
+            res = processIterator(this[source]);
         } else {
-            res = Promise.resolve(this[target]);
+            res = Promise.resolve(this[source]);
         }
 
         this[status] === "closed";
@@ -43,14 +46,16 @@ class ThenableGenerator {
     next(value) {
         let res;
 
-        if (!this[target] || this[status] === "closed") {
+        if (!this[source] || this[status] === "closed") {
             res = { value: void 0, done: true };
-        } else if (typeof this[target].next === "function") {
-            res = this[target].next(value);
-        } else if (typeof this[target].then === "function") {
-            res = this[target].then(value => ({ value, done: true }));
+        } else if (this[status] === "errored") {
+            return this.throw(this[source]);
+        } else if (typeof this[source].next === "function") {
+            res = this[source].next(value);
+        } else if (typeof this[source].then === "function") {
+            res = this[source].then(value => ({ value, done: true }));
         } else {
-            res = { value: this[target], done: true };
+            res = { value: this[source], done: true };
         }
 
         if (res.done === true) {
@@ -66,10 +71,10 @@ class ThenableGenerator {
     return(value) {
         this[status] = "closed";
 
-        if (this[target] && typeof this[target].return === "function") {
-            return this[target].return(value);
-        } else if (this[target] && typeof this[target].then === "function") {
-            return this[target].then(() => ({ value, done: true }));
+        if (this[source] && typeof this[source].return === "function") {
+            return this[source].return(value);
+        } else if (this[source] && typeof this[source].then === "function") {
+            return this[source].then(() => ({ value, done: true }));
         } else {
             return { value, done: true };
         }
@@ -81,8 +86,8 @@ class ThenableGenerator {
     throw(err) {
         this[status] = "closed";
 
-        if (this[target] && typeof this[target].throw === "function") {
-            return this[target].throw(err);
+        if (this[source] && typeof this[source].throw === "function") {
+            return this[source].throw(err);
         } else {
             throw err;
         }
@@ -122,13 +127,40 @@ function processIterator(iterator) {
     });
 }
 
-/**
- * @param {Function} fn
- */
-ThenableGenerator.create = function create(fn) {
-    return function () {
-        return new ThenableGenerator(fn.apply(void 0, Array.from(arguments)));
+function ThenableGenerator() {
+    let self;
+
+    if (this instanceof ThenableGenerator) {
+        self = this;
+    } else {
+        self = new ThenableGenerator();
+    }
+
+    let args = Array.from(arguments);
+    let fn = typeof args[0] === "function"
+        ? args[0]
+        : GeneratorFunction.apply(void 0, args);
+
+    function anonymous() {
+        try {
+            return new ThenableIterator(fn.apply(void 0, Array.from(arguments)));
+        } catch (err) {
+            return Object.assign(new ThenableIterator(err), {
+                [status]: "errored"
+            });
+        }
     };
+
+    // HACK, let the returning function be an instance of the ThenableGenerator.
+    anonymous.prototype = ThenableGenerator;
+    anonymous.__proto__ = self;
+
+    return anonymous;
+}
+
+ThenableGenerator.create = function create() {
+    return ThenableGenerator.apply(void 0, Array.from(arguments));
 };
 
+exports.ThenableIterator = ThenableIterator;
 exports.default = exports.ThenableGenerator = ThenableGenerator;

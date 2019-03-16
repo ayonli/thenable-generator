@@ -1,5 +1,5 @@
 import "source-map-support/register";
-import { ThenableGenerator } from "..";
+import { ThenableGenerator, ThenableIterator } from "..";
 import * as assert from "assert";
 
 describe("Create ThenableGenerator by a GeneratorFunction", () => {
@@ -10,7 +10,8 @@ describe("Create ThenableGenerator by a GeneratorFunction", () => {
     });
 
     it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(gen instanceof ThenableGenerator);
+        assert.ok(gen() instanceof ThenableIterator);
     });
 
     it("should await the result as expected", async () => {
@@ -84,7 +85,8 @@ describe("Create ThenableGenerator by a AsyncGeneratorFunction", () => {
     });
 
     it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(gen instanceof ThenableGenerator);
+        assert.ok(gen() instanceof ThenableIterator);
     });
 
     it("should await the result as expected", async () => {
@@ -160,7 +162,8 @@ describe("Create ThenableGenerator by an AsyncFunction", () => {
     });
 
     it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(gen instanceof ThenableGenerator);
+        assert.ok(gen() instanceof ThenableIterator);
     });
 
     it("should await the result as expected", async () => {
@@ -233,7 +236,8 @@ describe("Create ThenableGenerator by a Function", () => {
     });
 
     it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(gen instanceof ThenableGenerator);
+        assert.ok(gen() instanceof ThenableIterator);
     });
 
     it("should await the result as expected", async () => {
@@ -269,6 +273,119 @@ describe("Create ThenableGenerator by a Function", () => {
         }
 
         assert.deepStrictEqual(items, <IteratorResult<string>[]>[
+            { value: "Hello, World!", done: true }
+        ]);
+    });
+
+    it("should implement return() method as suggested", () => {
+        let iterator = gen();
+        let result = iterator.return("Hello");
+
+        assert.deepStrictEqual(result, { value: "Hello", done: true });
+        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
+    });
+
+    it("should implement throw() method as suggested", () => {
+        let iterator = gen();
+        let err: Error;
+
+        try {
+            iterator.throw(new Error("Error thrown"));
+        } catch (e) {
+            err = e;
+        }
+
+        assert.ok(err instanceof Error);
+        assert.strictEqual(err.message, "Error thrown");
+        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
+    });
+
+    it("should throw and catch error as expected", async () => {
+        let gen = ThenableGenerator.create((errored) => {
+
+            if (errored)
+                throw new Error("Error thrown");
+
+            return "Hello, World!";
+        });
+
+        let err: Error;
+
+        try {
+            await gen(true);
+        } catch (e) {
+            err = e;
+        }
+
+        assert.ok(err instanceof Error);
+        assert.strictEqual(err.message, "Error thrown");
+
+        let iterator = gen(true);
+        let err2: Error;
+        let looped = false;
+
+        try {
+            for (let item of iterator) {
+                looped = !!item;
+            }
+        } catch (e) {
+            err2 = e;
+        }
+
+        assert.ok(!looped);
+        assert.ok(err2 instanceof Error);
+        assert.strictEqual(err2.message, "Error thrown");
+        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
+    });
+});
+
+describe("Create ThenableGenerator by strings", () => {
+    var gen = ThenableGenerator.create<string>("...args", `
+        yield "Hello";
+        yield "World";
+        return args.length ? args.join(" ") : "Hello, World!";
+    `);
+
+    it("should create a ThenableGenerator entry as expected", () => {
+        assert.ok(gen instanceof ThenableGenerator);
+        assert.ok(gen() instanceof ThenableIterator);
+    });
+
+    it("should await the result as expected", async () => {
+        assert.strictEqual(await gen(), "Hello, World!");
+    });
+
+    it("should pass arguments as expected", async () => {
+        assert.strictEqual(await gen("Hello", "World"), "Hello World");
+    });
+
+    it("should yield values and be traveled in a for...of... loop as expected", () => {
+        let values = [];
+
+        for (let item of gen()) {
+            values.push(item);
+        }
+
+        assert.deepStrictEqual(values, ["Hello", "World"]);
+    });
+
+    it("should implement next() method as suggested", () => {
+        let iterator = gen();
+        let items: IteratorResult<string>[] = [];
+        let item: IteratorResult<string>;
+
+        // Passing value to the next() method should have no effect.
+        while (item = iterator.next("Hello")) {
+            items.push(item);
+
+            if (item.done) {
+                break;
+            }
+        }
+
+        assert.deepStrictEqual(items, <IteratorResult<string>[]>[
+            { value: "Hello", done: false },
+            { value: "World", done: false },
             { value: "Hello, World!", done: true }
         ]);
     });
