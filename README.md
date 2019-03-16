@@ -1,32 +1,32 @@
-# ThenableGenerator
+# ThenableGeneratorFunction
 
 **Create generators implemented the `PromiseLike` interface so that they can**
 **be awaited in async contexts.**
 
-This module is meat to pack any function to a `ThenableGenerator`, so that it 
-can be used in both async functions and for (await)...of... loops. Depends on
-the statement, the generator returns/yields different values.
+This module is meant to pack any function to a `ThenableGeneratorFunction`, so 
+that it can be used in both async functions and for (await)...of... loops. 
+Depends on the statement, the generator returns/yields different values.
 
 ## Example
 
 ```typescript
-import ThenableGenerator from "thenable-generator";
+import create from "thenable-generator";
 
-var normalFn = ThenableGenerator.create(() => {
+var normalFn = create(() => {
     return "Hello, World!";
 });
 
-var asyncFn = ThenableGenerator.create(async () => {
+var asyncFn = create(async () => {
     return "Hello, World!";
 });
 
-var genFn = ThenableGenerator.create(function* () {
+var genFn = create(function* () {
     yield "Hello";
     yield "World";
     return "Hello, World!";
 });
 
-var asyncGenFn = ThenableGenerator.create(async function* () {
+var asyncGenFn = create(async function* () {
     yield "Hello";
     yield "World";
     return "Hello, World!";

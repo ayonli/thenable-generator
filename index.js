@@ -5,11 +5,10 @@ if (!Symbol.asyncIterator) {
     Symbol.asyncIterator = Symbol("Symbol.asyncIterator");
 }
 
-const source = exports.source = Symbol("ThenableGenerator.source");
-const status = exports.status = Symbol("ThenableGenerator.status");
-const GeneratorFunction = (function* () { }).constructor;
+const source = exports.source = Symbol("GeneratorSource");
+const status = exports.status = Symbol("GeneratorStatus");
 
-class ThenableIterator {
+class Thenable {
     constructor(source) {
         this[exports.source] = source;
         this[status] = "suspended";
@@ -39,11 +38,11 @@ class ThenableIterator {
 
         return res.then(onfulfilled, onrejected);
     }
+}
 
-    /**
-     * @returns {IteratorResult<any>}
-     */
+class ThenableGenerator extends Thenable {
     next(value) {
+        /** @type {IteratorResult<any>} */
         let res;
 
         if (!this[source] || this[status] === "closed") {
@@ -52,36 +51,30 @@ class ThenableIterator {
             return this.throw(this[source]);
         } else if (typeof this[source].next === "function") {
             res = this[source].next(value);
-        } else if (typeof this[source].then === "function") {
-            res = this[source].then(value => ({ value, done: true }));
         } else {
             res = { value: this[source], done: true };
         }
 
-        if (res.done === true) {
-            this[status] = "closed";
-        }
+        (res.done === true) && (this[status] = "closed");
 
         return res;
     }
 
     /**
-     * @returns {IteratorResult<any> | Promise<IteratorResult<any>>}
+     * @returns {IteratorResult<any>}
      */
     return(value) {
         this[status] = "closed";
 
         if (this[source] && typeof this[source].return === "function") {
             return this[source].return(value);
-        } else if (this[source] && typeof this[source].then === "function") {
-            return this[source].then(() => ({ value, done: true }));
         } else {
             return { value, done: true };
         }
     }
 
     /**
-     * @returns {never | Promise<never>}
+     * @returns {never}
      */
     throw(err) {
         this[status] = "closed";
@@ -96,9 +89,57 @@ class ThenableIterator {
     [Symbol.iterator]() {
         return this;
     }
+}
+
+class ThenableAsyncGenerator extends Thenable {
+    next(value) {
+        /** @type {Promise<IteratorResult<any>>} */
+        let res;
+
+        if (!this[source] || this[status] === "closed") {
+            res = Promise.resolve({ value: void 0, done: true });
+        } else if (typeof this[source].next === "function") {
+            res = this[source].next(value);
+        } else if (typeof this[source].then === "function") {
+            res = this[source].then(value => ({ value, done: true }));
+        } else {
+            res = Promise.resolve({ value: this[source], done: true });
+        }
+
+        return res.then(res => {
+            (res.done === true) && (this[status] = "closed");
+            return res;
+        });
+    }
+
+    /**
+     * @returns {Promise<IteratorResult<any>>}
+     */
+    return(value) {
+        this[status] = "closed";
+
+        if (this[source] && typeof this[source].return === "function") {
+            return this[source].return(value);
+        } else {
+            return Promise.resolve({ value, done: true });
+        }
+    }
+
+    /**
+     * @returns {Promise<never>}
+     */
+    throw(err) {
+        this[status] = "closed";
+
+        if (this[source] && typeof this[source].throw === "function") {
+            return this[source].throw(err);
+        } else {
+            return Promise.reject(err);
+        }
+    }
 
     [Symbol.asyncIterator]() {
-        return this[Symbol.iterator]();
+        return this;
     }
 }
 
@@ -127,40 +168,57 @@ function processIterator(iterator) {
     });
 }
 
-function ThenableGenerator() {
+/**
+ * @param {Function} fn 
+ */
+function ThenableGeneratorFunction(fn) {
     let self;
 
-    if (this instanceof ThenableGenerator) {
+    if (this instanceof ThenableGeneratorFunction) {
         self = this;
     } else {
-        self = new ThenableGenerator();
+        self = new ThenableGeneratorFunction();
     }
 
-    let args = Array.from(arguments);
-    let fn = typeof args[0] === "function"
-        ? args[0]
-        : GeneratorFunction.apply(void 0, args);
-
-    function anonymous() {
+    function anonymous(...args) {
         try {
-            return new ThenableIterator(fn.apply(void 0, Array.from(arguments)));
+            let source = fn.apply(void 0, args);
+
+            if (typeof source.then === "function" ||
+                typeof source[Symbol.asyncIterator] === "function") {
+                return new ThenableAsyncGenerator(source);
+            } else {
+                return new ThenableGenerator(source);
+            }
         } catch (err) {
-            return Object.assign(new ThenableIterator(err), {
+            return Object.assign(new ThenableGenerator(err), {
                 [status]: "errored"
             });
         }
     };
 
-    // HACK, let the returning function be an instance of the ThenableGenerator.
-    anonymous.prototype = ThenableGenerator;
+    // HACK, let the returning function be an instance of
+    // ThenableGeneratorFunction.
+    anonymous.prototype = ThenableGeneratorFunction;
     anonymous.__proto__ = self;
 
     return anonymous;
 }
 
-ThenableGenerator.create = function create() {
-    return ThenableGenerator.apply(void 0, Array.from(arguments));
+Object.setPrototypeOf(ThenableGeneratorFunction, Function);
+Object.setPrototypeOf(ThenableGeneratorFunction.prototype, Function.prototype);
+
+/**
+ * @param {Function} fn
+ */
+function create(fn) {
+    return new ThenableGeneratorFunction(fn);
 };
 
-exports.ThenableIterator = ThenableIterator;
-exports.default = exports.ThenableGenerator = ThenableGenerator;
+ThenableGeneratorFunction.create = create;
+
+exports.Thenable = Thenable;
+exports.ThenableGenerator = ThenableGenerator;
+exports.ThenableAsyncGenerator = ThenableAsyncGenerator;
+exports.ThenableGeneratorFunction = ThenableGeneratorFunction;
+exports.default = exports.create = create;

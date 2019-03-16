@@ -4,15 +4,16 @@ const tslib_1 = require("tslib");
 require("source-map-support/register");
 const __1 = require("..");
 const assert = require("assert");
-describe("Create ThenableGenerator by a GeneratorFunction", () => {
-    var gen = __1.default.create(function* (...args) {
+describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
+    var gen = __1.default(function* (...args) {
         yield "Hello";
         yield "World";
         return args.length ? args.join(" ") : "Hello, World!";
     });
-    it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen instanceof __1.default);
-        assert.ok(gen() instanceof __1.ThenableIterator);
+    it("should create a ThenableGeneratorFunction entry as expected", () => {
+        assert.ok(gen instanceof Function);
+        assert.ok(gen instanceof __1.ThenableGeneratorFunction);
+        assert.ok(gen() instanceof __1.ThenableGenerator);
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -63,17 +64,18 @@ describe("Create ThenableGenerator by a GeneratorFunction", () => {
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
 });
-describe("Create ThenableGenerator by a AsyncGeneratorFunction", () => {
-    var gen = __1.default.create(function (...args) {
+describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
+    var gen = __1.default(function (...args) {
         return tslib_1.__asyncGenerator(this, arguments, function* () {
             yield yield tslib_1.__await("Hello");
             yield yield tslib_1.__await("World");
             return yield tslib_1.__await(args.length ? args.join(" ") : "Hello, World!");
         });
     });
-    it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen instanceof __1.default);
-        assert.ok(gen() instanceof __1.ThenableIterator);
+    it("should create a ThenableGeneratorFunction entry as expected", () => {
+        assert.ok(gen instanceof Function);
+        assert.ok(gen instanceof __1.ThenableGeneratorFunction);
+        assert.ok(gen() instanceof __1.ThenableAsyncGenerator);
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -138,13 +140,14 @@ describe("Create ThenableGenerator by a AsyncGeneratorFunction", () => {
         assert.deepStrictEqual(yield iterator.next(), { value: void 0, done: true });
     }));
 });
-describe("Create ThenableGenerator by an AsyncFunction", () => {
-    var gen = __1.default.create((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
+    var gen = __1.default((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
         return args.length ? args.join(" ") : "Hello, World!";
     }));
-    it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen instanceof __1.default);
-        assert.ok(gen() instanceof __1.ThenableIterator);
+    it("should create a ThenableGeneratorFunction entry as expected", () => {
+        assert.ok(gen instanceof Function);
+        assert.ok(gen instanceof __1.ThenableGeneratorFunction);
+        assert.ok(gen() instanceof __1.ThenableAsyncGenerator);
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -190,7 +193,7 @@ describe("Create ThenableGenerator by an AsyncFunction", () => {
         let iterator = gen();
         let result = yield iterator.return("Hello");
         assert.deepStrictEqual(result, { value: "Hello", done: true });
-        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
+        assert.deepStrictEqual(yield iterator.next(), { value: void 0, done: true });
     }));
     it("should implement throw() method as suggested", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         let iterator = gen();
@@ -206,13 +209,14 @@ describe("Create ThenableGenerator by an AsyncFunction", () => {
         assert.deepStrictEqual(yield iterator.next(), { value: void 0, done: true });
     }));
 });
-describe("Create ThenableGenerator by a Function", () => {
-    var gen = __1.default.create((...args) => {
+describe("Create ThenableGeneratorFunction by a Function", () => {
+    var gen = __1.default((...args) => {
         return args.length ? args.join(" ") : "Hello, World!";
     });
-    it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen instanceof __1.default);
-        assert.ok(gen() instanceof __1.ThenableIterator);
+    it("should create a ThenableGeneratorFunction entry as expected", () => {
+        assert.ok(gen instanceof Function);
+        assert.ok(gen instanceof __1.ThenableGeneratorFunction);
+        assert.ok(gen() instanceof __1.ThenableGenerator);
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -261,7 +265,7 @@ describe("Create ThenableGenerator by a Function", () => {
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
     it("should throw and catch error as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
-        let gen = __1.default.create((errored) => {
+        let gen = __1.default((errored) => {
             if (errored)
                 throw new Error("Error thrown");
             return "Hello, World!";
@@ -291,64 +295,5 @@ describe("Create ThenableGenerator by a Function", () => {
         assert.strictEqual(err2.message, "Error thrown");
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     }));
-});
-describe("Create ThenableGenerator by strings", () => {
-    var gen = __1.default.create("...args", `
-        yield "Hello";
-        yield "World";
-        return args.length ? args.join(" ") : "Hello, World!";
-    `);
-    it("should create a ThenableGenerator entry as expected", () => {
-        assert.ok(gen instanceof __1.default);
-        assert.ok(gen() instanceof __1.ThenableIterator);
-    });
-    it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
-        assert.strictEqual(yield gen(), "Hello, World!");
-    }));
-    it("should pass arguments as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
-        assert.strictEqual(yield gen("Hello", "World"), "Hello World");
-    }));
-    it("should yield values and be traveled in a for...of... loop as expected", () => {
-        let values = [];
-        for (let item of gen()) {
-            values.push(item);
-        }
-        assert.deepStrictEqual(values, ["Hello", "World"]);
-    });
-    it("should implement next() method as suggested", () => {
-        let iterator = gen();
-        let items = [];
-        let item;
-        while (item = iterator.next("Hello")) {
-            items.push(item);
-            if (item.done) {
-                break;
-            }
-        }
-        assert.deepStrictEqual(items, [
-            { value: "Hello", done: false },
-            { value: "World", done: false },
-            { value: "Hello, World!", done: true }
-        ]);
-    });
-    it("should implement return() method as suggested", () => {
-        let iterator = gen();
-        let result = iterator.return("Hello");
-        assert.deepStrictEqual(result, { value: "Hello", done: true });
-        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
-    });
-    it("should implement throw() method as suggested", () => {
-        let iterator = gen();
-        let err;
-        try {
-            iterator.throw(new Error("Error thrown"));
-        }
-        catch (e) {
-            err = e;
-        }
-        assert.ok(err instanceof Error);
-        assert.strictEqual(err.message, "Error thrown");
-        assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
-    });
 });
 //# sourceMappingURL=index.js.map
