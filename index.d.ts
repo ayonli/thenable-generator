@@ -5,6 +5,7 @@ export declare abstract class Thenable<T = any> implements PromiseLike<T> {
     protected [source]: any;
     protected [status]: "suspended" | "closed" | "errored";
 
+    constructor(source: any);
     then<R1 = T, R2 = never>(
         onfulfilled?: (value: T) => R1 | PromiseLike<R1> | void,
         onrejected?: (reason: any) => R2 | PromiseLike<R2> | void

@@ -19,9 +19,9 @@ class Thenable {
     /**
      * @param {(value: any) => any} onfulfilled 
      * @param {(reason: any) => void} onfulfilled 
-     * @returns {Promise<any>}
      */
     then(onfulfilled, onrejected) {
+        /** @type {Promise<any>} */
         let res;
 
         if (!this[source] || this[status] === "closed") {
@@ -38,7 +38,9 @@ class Thenable {
 
         this[status] = "closed";
 
-        return res.then(onfulfilled, onrejected);
+        return res.then(value => {
+            return (this[result] = value);
+        }).then(onfulfilled, onrejected);
     }
 }
 
