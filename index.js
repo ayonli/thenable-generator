@@ -28,6 +28,8 @@ class Thenable {
             res = Promise.resolve(this[result]);
         } else if (this[status] === "errored") {
             res = Promise.reject(this[source]);
+        } else if (typeof this[source].then === "function") {
+            res = Promise.resolve(this[source]);
         } else if (typeof this[source].next === "function") {
             res = processIterator(this[source]);
         } else {
