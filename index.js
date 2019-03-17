@@ -24,7 +24,7 @@ class Thenable {
         /** @type {Promise<any>} */
         let res;
 
-        if (!this[source] || this[status] === "closed") {
+        if (this[source] === undefined || this[status] === "closed") {
             res = Promise.resolve(this[result]);
         } else if (this[status] === "errored") {
             res = Promise.reject(this[source]);
@@ -47,7 +47,7 @@ class ThenableGenerator extends Thenable {
         /** @type {IteratorResult<any>} */
         let res;
 
-        if (!this[source] || this[status] === "closed") {
+        if (this[source] === undefined || this[status] === "closed") {
             res = { value: void 0, done: true };
         } else if (this[status] === "errored") {
             return this.throw(this[source]);
@@ -101,7 +101,7 @@ class ThenableAsyncGenerator extends Thenable {
         /** @type {Promise<IteratorResult<any>>} */
         let res;
 
-        if (!this[source] || this[status] === "closed") {
+        if (this[source] === undefined || this[status] === "closed") {
             res = Promise.resolve({ value: void 0, done: true });
         } else if (typeof this[source].next === "function") {
             res = Promise.resolve(this[source].next(value));
