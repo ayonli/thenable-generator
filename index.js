@@ -192,7 +192,7 @@ function ThenableGeneratorFunction(fn) {
 
     function anonymous(...args) {
         try {
-            let source = fn.apply(void 0, args);
+            let source = fn.apply(this, args);
 
             if (typeof source.then === "function" ||
                 typeof source[Symbol.asyncIterator] === "function") {
