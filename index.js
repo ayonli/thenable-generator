@@ -28,8 +28,6 @@ class Thenable {
             res = Promise.resolve(this[result]);
         } else if (this[status] === "errored") {
             res = Promise.reject(this[source]);
-        } else if (typeof this[source].then === "function") {
-            res = this[source];
         } else if (typeof this[source].next === "function") {
             res = processIterator(this[source]);
         } else {
@@ -106,11 +104,11 @@ class ThenableAsyncGenerator extends Thenable {
         if (!this[source] || this[status] === "closed") {
             res = Promise.resolve({ value: void 0, done: true });
         } else if (typeof this[source].next === "function") {
-            res = this[source].next(value);
-        } else if (typeof this[source].then === "function") {
-            res = this[source].then(value => ({ value, done: true }));
+            res = Promise.resolve(this[source].next(value));
         } else {
-            res = Promise.resolve({ value: this[source], done: true });
+            res = Promise.resolve(this[source]).then(value => {
+                return { value, done: true };
+            });
         }
 
         return res.then(res => {
@@ -131,7 +129,7 @@ class ThenableAsyncGenerator extends Thenable {
         this[result] = value;
 
         if (this[source] && typeof this[source].return === "function") {
-            return this[source].return(value);
+            return Promise.resolve(this[source].return(value));
         } else {
             return Promise.resolve({ value, done: true });
         }
@@ -144,7 +142,7 @@ class ThenableAsyncGenerator extends Thenable {
         this[status] = "closed";
 
         if (this[source] && typeof this[source].throw === "function") {
-            return this[source].throw(err);
+            return Promise.resolve(this[source].throw(err));
         } else {
             return Promise.reject(err);
         }
@@ -207,7 +205,7 @@ function ThenableGeneratorFunction(fn) {
                 [status]: "errored"
             });
         }
-    };
+    }
 
     // HACK, let the returning function be an instance of
     // ThenableGeneratorFunction.
@@ -225,7 +223,7 @@ Object.setPrototypeOf(ThenableGeneratorFunction.prototype, Function.prototype);
  */
 function create(fn) {
     return new ThenableGeneratorFunction(fn);
-};
+}
 
 ThenableGeneratorFunction.create = create;
 
