@@ -79,6 +79,7 @@ class ThenableGenerator extends Thenable {
      */
     return(value) {
         this[status] = "closed";
+        this[result] = value;
 
         if (this[source] && typeof this[source].return === "function") {
             return this[source].return(value);
