@@ -42,6 +42,13 @@ class Thenable {
             return (this[result] = value);
         }).then(onfulfilled, onrejected);
     }
+
+    /**
+     * @param {(reason: any) => void} onrejected
+     */
+    catch(onrejected) {
+        return this.then(null, onrejected);
+    }
 }
 
 class ThenableGenerator extends Thenable {

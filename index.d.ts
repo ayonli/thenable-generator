@@ -1,7 +1,33 @@
 export declare const source: unique symbol;
 export declare const status: unique symbol;
 
-export declare abstract class Thenable<T = any> implements PromiseLike<T> {
+export interface ThenableGeneratorLike<T = any> {
+    then?<R1 = T, R2 = never>(
+        onfulfilled?: (value: T) => R1 | PromiseLike<R1> | void,
+        onrejected?: (reason: any) => R2 | PromiseLike<R2> | void
+    ): PromiseLike<R1 | R2>;
+    catch?<R = never>(
+        onrejected?: (reason: any) => R | PromiseLike<R> | void
+    ): Promise<T | R>;
+    next?(value?: T): IteratorResult<T>;
+    return?(value?: T): IteratorResult<T>;
+    throw?(err?: any): never;
+}
+
+export interface ThenableAsyncGeneratorLike<T = any> {
+    then?<R1 = T, R2 = never>(
+        onfulfilled?: (value: T) => R1 | PromiseLike<R1> | void,
+        onrejected?: (reason: any) => R2 | PromiseLike<R2> | void
+    ): PromiseLike<R1 | R2>;
+    catch?<R = never>(
+        onrejected?: (reason: any) => R | PromiseLike<R> | void
+    ): Promise<T | R>;
+    next?(value?: T): Promise<IteratorResult<T>>;
+    return?(value?: T): Promise<IteratorResult<T>>;
+    throw?(err?: any): Promise<never>;
+}
+
+export declare class Thenable<T = any> implements PromiseLike<T> {
     protected [source]: any;
     protected [status]: "suspended" | "closed" | "errored";
 
@@ -10,16 +36,19 @@ export declare abstract class Thenable<T = any> implements PromiseLike<T> {
         onfulfilled?: (value: T) => R1 | PromiseLike<R1> | void,
         onrejected?: (reason: any) => R2 | PromiseLike<R2> | void
     ): PromiseLike<R1 | R2>;
+    catch<R = never>(
+        onrejected?: (reason: any) => R | PromiseLike<R> | void
+    ): Promise<T | R>;
 }
 
-export declare class ThenableGenerator<T = any> extends Thenable<T> implements IterableIterator<T> {
+export declare class ThenableGenerator<T = any> extends Thenable<T> implements ThenableGeneratorLike<T>, IterableIterator<T> {
     next(value?: T): IteratorResult<T>;
     return(value?: T): IteratorResult<T>;
     throw(err?: any): never;
     [Symbol.iterator](): this;
 }
 
-export declare class ThenableAsyncGenerator<T = any> extends Thenable<T> implements AsyncIterableIterator<T> {
+export declare class ThenableAsyncGenerator<T = any> extends Thenable<T> implements ThenableAsyncGeneratorLike<T>, AsyncIterableIterator<T> {
     next(value?: T): Promise<IteratorResult<T>>;
     return(value?: T): Promise<IteratorResult<T>>;
     throw(err?: any): Promise<never>;

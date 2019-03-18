@@ -352,5 +352,9 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.ok(err2 instanceof Error);
         assert.strictEqual(err2.message, "Error thrown");
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
+
+        let err3: Error = await gen(true).catch(err => err);
+        assert.ok(err3 instanceof Error);
+        assert.strictEqual(err3.message, "Error thrown");
     });
 });
