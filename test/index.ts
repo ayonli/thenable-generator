@@ -3,6 +3,7 @@ import create, {
     ThenableGenerator,
     ThenableAsyncGenerator,
     ThenableGeneratorFunction,
+    util
 } from "..";
 import * as assert from "assert";
 
@@ -356,5 +357,27 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         let err3: Error = await gen(true).catch(err => err);
         assert.ok(err3 instanceof Error);
         assert.strictEqual(err3.message, "Error thrown");
+    });
+});
+
+describe("Util Functions", () => {
+    it("should check generator function results as expected", () => {
+        var gen = (function* () { })();
+        var noGen = { [Symbol.iterator]() { return []; } };
+        var thenGen = create(function* () { })();
+
+        assert.ok(util.isGenerator(gen));
+        assert.ok(!util.isGenerator(noGen));
+        assert.ok(util.isGenerator(thenGen));
+    });
+
+    it("should check async generator function results as expected", () => {
+        var gen = (async function* () { })();
+        var noGen = { [Symbol.asyncIterator]() { return []; } }
+        var thenGen = create(async function* () { })();
+
+        assert.ok(util.isAsyncGenerator(gen));
+        assert.ok(!util.isAsyncGenerator(noGen));
+        assert.ok(util.isAsyncGenerator(thenGen));
     });
 });

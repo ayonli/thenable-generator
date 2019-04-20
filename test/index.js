@@ -307,4 +307,22 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.strictEqual(err3.message, "Error thrown");
     }));
 });
+describe("Util Functions", () => {
+    it("should check generator function results as expected", () => {
+        var gen = (function* () { })();
+        var noGen = { [Symbol.iterator]() { return []; } };
+        var thenGen = __1.default(function* () { })();
+        assert.ok(__1.util.isGenerator(gen));
+        assert.ok(!__1.util.isGenerator(noGen));
+        assert.ok(__1.util.isGenerator(thenGen));
+    });
+    it("should check async generator function results as expected", () => {
+        var gen = (function () { return tslib_1.__asyncGenerator(this, arguments, function* () { }); })();
+        var noGen = { [Symbol.asyncIterator]() { return []; } };
+        var thenGen = __1.default(function () { return tslib_1.__asyncGenerator(this, arguments, function* () { }); })();
+        assert.ok(__1.util.isAsyncGenerator(gen));
+        assert.ok(!__1.util.isAsyncGenerator(noGen));
+        assert.ok(__1.util.isAsyncGenerator(thenGen));
+    });
+});
 //# sourceMappingURL=index.js.map

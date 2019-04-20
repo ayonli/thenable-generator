@@ -188,6 +188,19 @@ function processIterator(iterator) {
     });
 }
 
+const util = {};
+(function (util) {
+    util.isGenerator = function isGenerator(source) {
+        return typeof source[Symbol.iterator] === "function"
+            && source[Symbol.iterator]() === source;
+    };
+
+    util.isAsyncGenerator = function isAsyncGenerator(source) {
+        return typeof source[Symbol.asyncIterator] === "function"
+            && source[Symbol.asyncIterator]() === source;
+    };
+})(util);
+
 /**
  * @param {Function} fn 
  */
@@ -205,7 +218,7 @@ function ThenableGeneratorFunction(fn) {
             let source = fn.apply(this, args);
 
             if (typeof source.then === "function" ||
-                typeof source[Symbol.asyncIterator] === "function") {
+                util.isAsyncGenerator(source)) {
                 return new ThenableAsyncGenerator(source);
             } else {
                 return new ThenableGenerator(source);
@@ -237,6 +250,7 @@ function create(fn) {
 
 ThenableGeneratorFunction.create = create;
 
+exports.util = util;
 exports.Thenable = Thenable;
 exports.ThenableGenerator = ThenableGenerator;
 exports.ThenableAsyncGenerator = ThenableAsyncGenerator;
