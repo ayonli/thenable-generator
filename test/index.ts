@@ -3,9 +3,9 @@ import create, {
     ThenableGenerator,
     ThenableAsyncGenerator,
     ThenableGeneratorFunction,
-    util
 } from "..";
 import * as assert from "assert";
+import * as check from "check-iterable";
 
 describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     var gen = create(function* (...args: string[]) {
@@ -18,6 +18,7 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof ThenableGeneratorFunction);
         assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(check.isGenerator(gen()));
     });
 
     it("should await the result as expected", async () => {
@@ -96,6 +97,7 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof ThenableGeneratorFunction);
         assert.ok(gen() instanceof ThenableAsyncGenerator);
+        assert.ok(check.isAsyncGenerator(gen()));
     });
 
     it("should await the result as expected", async () => {
@@ -176,6 +178,7 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof ThenableGeneratorFunction);
         assert.ok(gen() instanceof ThenableAsyncGenerator);
+        assert.ok(check.isAsyncGenerator(gen()));
     });
 
     it("should await the result as expected", async () => {
@@ -253,6 +256,7 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof ThenableGeneratorFunction);
         assert.ok(gen() instanceof ThenableGenerator);
+        assert.ok(check.isGenerator(gen()));
     });
 
     it("should await the result as expected", async () => {
@@ -357,27 +361,5 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         let err3: Error = await gen(true).catch(err => err);
         assert.ok(err3 instanceof Error);
         assert.strictEqual(err3.message, "Error thrown");
-    });
-});
-
-describe("Util Functions", () => {
-    it("should check generator function results as expected", () => {
-        var gen = (function* () { })();
-        var noGen = { [Symbol.iterator]() { return []; } };
-        var thenGen = create(function* () { })();
-
-        assert.ok(util.isGenerator(gen));
-        assert.ok(!util.isGenerator(noGen));
-        assert.ok(util.isGenerator(thenGen));
-    });
-
-    it("should check async generator function results as expected", () => {
-        var gen = (async function* () { })();
-        var noGen = { [Symbol.asyncIterator]() { return []; } }
-        var thenGen = create(async function* () { })();
-
-        assert.ok(util.isAsyncGenerator(gen));
-        assert.ok(!util.isAsyncGenerator(noGen));
-        assert.ok(util.isAsyncGenerator(thenGen));
     });
 });

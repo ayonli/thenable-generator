@@ -5,6 +5,8 @@ if (!Symbol.asyncIterator) {
     Symbol.asyncIterator = Symbol("Symbol.asyncIterator");
 }
 
+const check = require("check-iterable");
+
 const source = exports.source = Symbol("GeneratorSource");
 const status = exports.status = Symbol("GeneratorStatus");
 const result = exports.result = Symbol("GeneratorResult");
@@ -188,28 +190,6 @@ function processIterator(iterator) {
     });
 }
 
-const util = {};
-(function (util) {
-    function isGeneratorKind(source) {
-        return typeof source === "object"
-            && typeof source.next === "function"
-            && typeof source.return === "function"
-            && typeof source.throw === "function";
-    }
-
-    util.isGenerator = function isGenerator(source) {
-        return isGeneratorKind(source)
-            && typeof source[Symbol.iterator] === "function"
-            && source[Symbol.iterator]() === source;
-    };
-
-    util.isAsyncGenerator = function isAsyncGenerator(source) {
-        return isGeneratorKind(source)
-            && typeof source[Symbol.asyncIterator] === "function"
-            && source[Symbol.asyncIterator]() === source;
-    };
-})(util);
-
 /**
  * @param {Function} fn 
  */
@@ -227,7 +207,7 @@ function ThenableGeneratorFunction(fn) {
             let source = fn.apply(this, args);
 
             if (typeof source.then === "function" ||
-                util.isAsyncGenerator(source)) {
+                check.isAsyncGenerator(source)) {
                 return new ThenableAsyncGenerator(source);
             } else {
                 return new ThenableGenerator(source);
@@ -259,7 +239,6 @@ function create(fn) {
 
 ThenableGeneratorFunction.create = create;
 
-exports.util = util;
 exports.Thenable = Thenable;
 exports.ThenableGenerator = ThenableGenerator;
 exports.ThenableAsyncGenerator = ThenableAsyncGenerator;

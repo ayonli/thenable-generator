@@ -79,9 +79,4 @@ export declare function create<T = any>(
     fn: (...args: any[]) => T | Iterable<T>
 ): iThenableGeneratorFunction<T>;
 
-export namespace util {
-    function isGenerator(source: any): boolean;
-    function isAsyncGenerator(source: any): boolean;
-}
-
 export default create;

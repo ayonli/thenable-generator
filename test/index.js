@@ -4,6 +4,7 @@ const tslib_1 = require("tslib");
 require("source-map-support/register");
 const __1 = require("..");
 const assert = require("assert");
+const check = require("check-iterable");
 describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     var gen = __1.default(function* (...args) {
         yield "Hello";
@@ -14,6 +15,7 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof __1.ThenableGeneratorFunction);
         assert.ok(gen() instanceof __1.ThenableGenerator);
+        assert.ok(check.isGenerator(gen()));
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -78,6 +80,7 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof __1.ThenableGeneratorFunction);
         assert.ok(gen() instanceof __1.ThenableAsyncGenerator);
+        assert.ok(check.isAsyncGenerator(gen()));
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -152,6 +155,7 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof __1.ThenableGeneratorFunction);
         assert.ok(gen() instanceof __1.ThenableAsyncGenerator);
+        assert.ok(check.isAsyncGenerator(gen()));
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -223,6 +227,7 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.ok(gen instanceof Function);
         assert.ok(gen instanceof __1.ThenableGeneratorFunction);
         assert.ok(gen() instanceof __1.ThenableGenerator);
+        assert.ok(check.isGenerator(gen()));
     });
     it("should await the result as expected", () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         assert.strictEqual(yield gen(), "Hello, World!");
@@ -306,23 +311,5 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.ok(err3 instanceof Error);
         assert.strictEqual(err3.message, "Error thrown");
     }));
-});
-describe("Util Functions", () => {
-    it("should check generator function results as expected", () => {
-        var gen = (function* () { })();
-        var noGen = { [Symbol.iterator]() { return []; } };
-        var thenGen = __1.default(function* () { })();
-        assert.ok(__1.util.isGenerator(gen));
-        assert.ok(!__1.util.isGenerator(noGen));
-        assert.ok(__1.util.isGenerator(thenGen));
-    });
-    it("should check async generator function results as expected", () => {
-        var gen = (function () { return tslib_1.__asyncGenerator(this, arguments, function* () { }); })();
-        var noGen = { [Symbol.asyncIterator]() { return []; } };
-        var thenGen = __1.default(function () { return tslib_1.__asyncGenerator(this, arguments, function* () { }); })();
-        assert.ok(__1.util.isAsyncGenerator(gen));
-        assert.ok(!__1.util.isAsyncGenerator(noGen));
-        assert.ok(__1.util.isAsyncGenerator(thenGen));
-    });
 });
 //# sourceMappingURL=index.js.map
