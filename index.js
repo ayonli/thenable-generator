@@ -190,13 +190,22 @@ function processIterator(iterator) {
 
 const util = {};
 (function (util) {
+    function isGeneratorKind(source) {
+        return typeof source === "object"
+            && typeof source.next === "function"
+            && typeof source.return === "function"
+            && typeof source.throw === "function";
+    }
+
     util.isGenerator = function isGenerator(source) {
-        return typeof source[Symbol.iterator] === "function"
+        return isGeneratorKind(source)
+            && typeof source[Symbol.iterator] === "function"
             && source[Symbol.iterator]() === source;
     };
 
     util.isAsyncGenerator = function isAsyncGenerator(source) {
-        return typeof source[Symbol.asyncIterator] === "function"
+        return isGeneratorKind(source)
+            && typeof source[Symbol.asyncIterator] === "function"
             && source[Symbol.asyncIterator]() === source;
     };
 })(util);

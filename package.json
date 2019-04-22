@@ -1,6 +1,6 @@
 {
   "name": "thenable-generator",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -36,6 +36,5 @@
   },
   "engines": {
     "node": ">=6.0"
-  },
-  "dependencies": {}
+  }
 }
