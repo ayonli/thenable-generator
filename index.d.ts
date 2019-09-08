@@ -22,8 +22,8 @@ export interface ThenableAsyncGeneratorLike<T = any> {
     catch?<R = never>(
         onrejected?: (reason: any) => R | PromiseLike<R> | void
     ): Promise<T | R>;
-    next?(value?: T): Promise<IteratorResult<T>>;
-    return?(value?: T): Promise<IteratorResult<T>>;
+    next?(value?: T | PromiseLike<T>): Promise<IteratorResult<T>>;
+    return?(value?: T | PromiseLike<T>): Promise<IteratorResult<T>>;
     throw?(err?: any): Promise<never>;
 }
 
@@ -49,8 +49,8 @@ export declare class ThenableGenerator<T = any> extends Thenable<T> implements T
 }
 
 export declare class ThenableAsyncGenerator<T = any> extends Thenable<T> implements ThenableAsyncGeneratorLike<T>, AsyncIterableIterator<T> {
-    next(value?: T): Promise<IteratorResult<T>>;
-    return(value?: T): Promise<IteratorResult<T>>;
+    next(value?: T | PromiseLike<T>): Promise<IteratorResult<T>>;
+    return(value?: T | PromiseLike<T>): Promise<IteratorResult<T>>;
     throw(err?: any): Promise<never>;
     [Symbol.asyncIterator](): this;
 }

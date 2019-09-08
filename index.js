@@ -138,13 +138,18 @@ class ThenableAsyncGenerator extends Thenable {
      */
     return(value) {
         this[status] = "closed";
-        this[result] = value;
 
-        if (this[source] && typeof this[source].return === "function") {
-            return Promise.resolve(this[source].return(value));
-        } else {
-            return Promise.resolve({ value, done: true });
-        }
+        // The input value may be a promise-like object, using Promise.resolve()
+        // to guarantee the value is resolved.
+        return Promise.resolve(value).then(value => {
+            this[result] = value;
+
+            if (this[source] && typeof this[source].return === "function") {
+                return Promise.resolve(this[source].return(value));
+            } else {
+                return Promise.resolve({ value, done: true });
+            }
+        });
     }
 
     /**
