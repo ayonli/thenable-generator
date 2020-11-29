@@ -11,6 +11,8 @@ Depends on the statement, the generator returns/yields different values.
 
 ```typescript
 import create from "thenable-generator";
+// Or in Deno
+import create from "https://deno.land/x/thenable_generator/index.ts";
 
 var normalFn = create(() => {
     return "Hello, World!";
@@ -66,4 +68,4 @@ can reach the returning value of the generator, however, if await is called
 before the for (await)...of... loop, that will cause the generator to close 
 early and the for block will never be executed.
 
-For full API, please checkout [Declarations](./index.d.ts).
+For full API, please checkout [the source file](./index.ts).

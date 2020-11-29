@@ -126,7 +126,7 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
         let item: Promise<IteratorResult<string>>;
 
         // Passing value to the next() method should have no effect.
-        while (item = iterator.next("Hello")) {
+        while (item = iterator.next(<any>"Hello")) {
             assert.ok(item instanceof Promise);
 
             let res = await item;
@@ -322,9 +322,9 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
     });
 
     it("should throw and catch error as expected", async () => {
-        let gen = create((errored) => {
+        let gen = create((erred) => {
 
-            if (errored)
+            if (erred)
                 throw new Error("Error thrown");
 
             return "Hello, World!";

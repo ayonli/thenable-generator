@@ -1,21 +1,23 @@
 {
   "name": "thenable-generator",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
   "main": "index.js",
   "types": "index.d.ts",
   "devDependencies": {
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^11.11.3",
-    "mocha": "^6.0.2",
-    "source-map-support": "^0.5.11",
-    "tslib": "^1.9.3",
-    "typescript": "^3.3.3333"
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^11.15.38",
+    "check-iterable": "^1.0.5",
+    "mocha": "^6.2.3",
+    "source-map-support": "^0.5.19",
+    "tslib": "^2.0.3"
   },
   "scripts": {
-    "pretest": "tsc -p test",
-    "test": "mocha",
-    "posttest": "rm -f test/index.js*"
+    "prepublishOnly": "tsc --module commonjs --target es2015 --sourceMap true --declaration true --noImplicitThis true --noImplicitAny true index.ts",
+    "postpublish": "ls index.* | grep -v index.ts | xargs rm -f",
+    "pretest": "tsc --module commonjs --target es2015 test/index.ts",
+    "posttest": "rm -f test/index.js* && ls index.js* | xargs rm -f",
+    "test": "mocha"
   },
   "keywords": [
     "thenable",
@@ -39,7 +41,5 @@
   "engines": {
     "node": ">=6.0"
   },
-  "dependencies": {
-    "check-iterable": "^1.0.1"
-  }
+  "dependencies": {}
 }
