@@ -1,3 +1,9 @@
+if (!Symbol.asyncIterator) {
+    Object.defineProperty(Symbol, "asyncIterator", {
+        value: Symbol("Symbol.asyncIterator")
+    });
+}
+
 export const source: unique symbol = Symbol("GeneratorSource");
 export const status: unique symbol = Symbol("GeneratorStatus");
 export const result: unique symbol = Symbol("GeneratorResult");
@@ -215,12 +221,6 @@ Object.setPrototypeOf(ThenableGeneratorFunction.prototype, Function.prototype);
 
 export const create = ThenableGeneratorFunction.create;
 export default create;
-
-if (!Symbol.asyncIterator) {
-    Object.defineProperty(Symbol, "asyncIterator", {
-        value: Symbol("Symbol.asyncIterator")
-    });
-}
 
 function isAsyncGenerator(obj: any) {
     return obj !== null
