@@ -152,7 +152,7 @@ export class ThenableAsyncGenerator<T = unknown, TReturn = any, TNext = unknown>
         });
     }
 
-    return(value: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>> {
+    return(value?: TReturn | PromiseLike<TReturn>): Promise<IteratorResult<T, TReturn>> {
         this[status] = "closed";
 
         // The input value may be a promise-like object, using Promise.resolve()
