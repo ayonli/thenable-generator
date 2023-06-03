@@ -1,6 +1,6 @@
 {
   "name": "thenable-generator",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,7 +10,8 @@
     "check-iterable": "^1.0.5",
     "mocha": "^6.2.3",
     "source-map-support": "^0.5.19",
-    "tslib": "^2.1.0"
+    "tslib": "^2.1.0",
+    "typescript": "^4.9.5"
   },
   "scripts": {
     "prepublishOnly": "tsc --module commonjs --target es2015 --sourceMap true --declaration true --noImplicitThis true --noImplicitAny true index.ts",
@@ -27,19 +28,17 @@
     "AsyncFunction",
     "AsyncGenerator"
   ],
-  "author": "Ayon Lee <i@hyurl.com>",
+  "author": "A-yon Lee <the@ayon.li>",
   "license": "MIT",
-  "homepage": "https://github.com/hyurl/thenable-generator",
+  "homepage": "https://github.com/ayonli/thenable-generator",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyurl/thenable-generator.git"
+    "url": "git+https://github.com/ayonli/thenable-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/Hyurl/thenable-generator/issues",
-    "email": "i@hyurl.com"
+    "url": "https://github.com/ayonli/thenable-generator/issues"
   },
   "engines": {
     "node": ">=6.0"
-  },
-  "dependencies": {}
+  }
 }

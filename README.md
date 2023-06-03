@@ -11,8 +11,11 @@ Depends on the statement, the generator returns/yields different values.
 
 ```typescript
 import create from "thenable-generator";
+
 // Or in Deno
 import create from "https://deno.land/x/thenable_generator/index.ts";
+// Or
+import create from "https://github.com/ayonli/thenable-generator/raw/master/index.ts";
 
 var normalFn = create(() => {
     return "Hello, World!";
