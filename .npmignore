@@ -1,4 +1,4 @@
 .*
 node_modules/
-test/
-index.ts
+*.test.ts
+*.tgz

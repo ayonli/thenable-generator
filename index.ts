@@ -32,7 +32,7 @@ export interface ThenableGeneratorFunction<T = unknown, TReturn = any, TNext = u
     create<T = unknown, TReturn = any, TNext = unknown, TArgs extends any[] = any[]>(
         fn: (...args: TArgs) => Generator<T, TReturn, TNext> | Iterable<T> | T
     ): iThenableGeneratorFunction<T, TReturn, TNext, TArgs>;
-};
+}
 
 export class Thenable<T = any> implements PromiseLike<T> {
     protected [source]: any;
@@ -80,7 +80,7 @@ export class Thenable<T = any> implements PromiseLike<T> {
 
 export class ThenableGenerator<T = unknown, TReturn = any, TNext = unknown> extends Thenable<T> implements ThenableGeneratorLike<T, TReturn, TNext> {
     next(...args: [] | [TNext]): IteratorResult<T> {
-        let value = args[0];
+        const value = args[0];
         let res: IteratorResult<T>;
 
         if (this[source] === undefined || this[status] === "closed") {
@@ -129,7 +129,7 @@ export class ThenableGenerator<T = unknown, TReturn = any, TNext = unknown> exte
 
 export class ThenableAsyncGenerator<T = unknown, TReturn = any, TNext = unknown> extends Thenable<T> implements ThenableAsyncGeneratorLike<T, TReturn, TNext> {
     next(...args: [] | [TNext]): Promise<IteratorResult<T, TReturn>> {
-        let value = args[0];
+        const value = args[0];
         let res: Promise<IteratorResult<any>>;
 
         if (this[source] === undefined || this[status] === "closed") {
@@ -190,7 +190,7 @@ export const ThenableGeneratorFunction: ThenableGeneratorFunction = (function (t
 
     function anonymous(this: any, ...args: any[]) {
         try {
-            let source = fn.apply(this, args);
+            const source = fn.apply(this, args);
 
             if (typeof source.then === "function" || isAsyncGenerator(source)) {
                 return new ThenableAsyncGenerator(source);
@@ -212,7 +212,7 @@ export const ThenableGeneratorFunction: ThenableGeneratorFunction = (function (t
     return anonymous;
 }) as any;
 
-ThenableGeneratorFunction.create = function (fn: Function) {
+ThenableGeneratorFunction.create = function create(fn: Function) {
     return new ThenableGeneratorFunction(fn as any) as any;
 };
 

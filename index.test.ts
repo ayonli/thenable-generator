@@ -1,14 +1,15 @@
-import "source-map-support/register";
 import create, {
     ThenableGenerator,
     ThenableAsyncGenerator,
     ThenableGeneratorFunction,
-} from "..";
+} from ".";
+import { describe, it } from "mocha";
 import * as assert from "assert";
 import * as check from "check-iterable";
+import jsext from "@ayonli/jsext";
 
 describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
-    var gen = create(function* (...args: string[]) {
+    const gen = create(function* (...args: string[]) {
         yield "Hello";
         yield "World";
         return args.length ? args.join(" ") : "Hello, World!";
@@ -30,8 +31,8 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     });
 
     it("should yield values and be traveled in a for...of... loop as expected", async () => {
-        let values = [];
-        let iter = gen();
+        const values: string[] = [];
+        const iter = gen();
 
         for (let item of iter) {
             values.push(item);
@@ -42,8 +43,8 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     });
 
     it("should implement next() method as suggested", () => {
-        let iterator = gen();
-        let items: IteratorResult<string>[] = [];
+        const iterator = gen();
+        const items: IteratorResult<string>[] = [];
         let item: IteratorResult<string>;
 
         // Passing value to the next() method should have no effect.
@@ -63,31 +64,24 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     });
 
     it("should implement return() method as suggested", () => {
-        let iterator = gen();
-        let result = iterator.return("Hello");
+        const iterator = gen();
+        const result = iterator.return("Hello");
 
         assert.deepStrictEqual(result, { value: "Hello", done: true });
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
 
     it("should implement throw() method as suggested", () => {
-        let iterator = gen();
-        let err: Error;
+        const iterator = gen();
+        const [err] = jsext.try(() => iterator.throw(new Error("Error thrown")));
 
-        try {
-            iterator.throw(new Error("Error thrown"));
-        } catch (e) {
-            err = e;
-        }
-
-        assert.ok(err instanceof Error);
-        assert.strictEqual(err.message, "Error thrown");
+        assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
 });
 
 describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
-    var gen = create(async function* (...args: string[]) {
+    const gen = create(async function* (...args: string[]) {
         yield "Hello";
         yield "World";
         return args.length ? args.join(" ") : "Hello, World!";
@@ -109,8 +103,8 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
     });
 
     it("should yield values and be traveled in a for await...of... loop as expected", async () => {
-        let values = [];
-        let iter = gen();
+        const values: string[] = [];
+        const iter = gen();
 
         for await (let item of iter) {
             values.push(item);
@@ -121,8 +115,8 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
     });
 
     it("should implement next() method as suggested", async () => {
-        let iterator = gen();
-        let items: IteratorResult<string>[] = [];
+        const iterator = gen();
+        const items: IteratorResult<string>[] = [];
         let item: Promise<IteratorResult<string>>;
 
         // Passing value to the next() method should have no effect.
@@ -145,8 +139,8 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
     });
 
     it("should implement return() method as suggested", async () => {
-        let iterator = gen();
-        let result = iterator.return("Hello");
+        const iterator = gen();
+        const result = iterator.return("Hello");
 
         assert.ok(result instanceof Promise);
         assert.deepStrictEqual(await result, { value: "Hello", done: true });
@@ -154,23 +148,16 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
     });
 
     it("should implement throw() method as suggested", async () => {
-        let iterator = gen();
-        let err: Error;
+        const iterator = gen();
+        const [err] = await jsext.try(iterator.throw(new Error("Error thrown")));
 
-        try {
-            await iterator.throw(new Error("Error thrown"));
-        } catch (e) {
-            err = e;
-        }
-
-        assert.ok(err instanceof Error);
-        assert.strictEqual(err.message, "Error thrown");
+        assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(await iterator.next(), { value: void 0, done: true });
     });
 });
 
 describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
-    var gen = create(async (...args: any[]) => {
+    const gen = create(async (...args: any[]) => {
         return args.length ? args.join(" ") : "Hello, World!";
     });
 
@@ -190,8 +177,8 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
     });
 
     it("should not yield values in a for...of... loop as expected", async () => {
-        let values = [];
-        let iter = gen();
+        const values: string[] = [];
+        const iter = gen();
 
         for await (let item of iter) {
             values.push(item);
@@ -202,8 +189,8 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
     });
 
     it("should implement next() method as suggested", async () => {
-        let iterator = gen();
-        let items: IteratorResult<string>[] = [];
+        const iterator = gen();
+        const items: IteratorResult<string>[] = [];
         let item: Promise<IteratorResult<string>>;
 
         // Passing value to the next() method should have no effect.
@@ -224,31 +211,24 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
     });
 
     it("should implement return() method as suggested", async () => {
-        let iterator = gen();
-        let result = await iterator.return("Hello");
+        const iterator = gen();
+        const result = await iterator.return("Hello");
 
         assert.deepStrictEqual(result, { value: "Hello", done: true });
         assert.deepStrictEqual(await iterator.next(), { value: void 0, done: true });
     });
 
     it("should implement throw() method as suggested", async () => {
-        let iterator = gen();
-        let err: Error;
+        const iterator = gen();
+        const [err] = await jsext.try(iterator.throw(new Error("Error thrown")));
 
-        try {
-            await iterator.throw(new Error("Error thrown"));
-        } catch (e) {
-            err = e;
-        }
-
-        assert.ok(err instanceof Error);
-        assert.strictEqual(err.message, "Error thrown");
+        assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(await iterator.next(), { value: void 0, done: true });
     });
 });
 
 describe("Create ThenableGeneratorFunction by a Function", () => {
-    var gen = create((...args: any[]) => {
+    const gen = create((...args: any[]) => {
         return args.length ? args.join(" ") : "Hello, World!";
     });
 
@@ -268,8 +248,8 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
     });
 
     it("should yield values and be traveled in a for...of... loop as expected", async () => {
-        let values = [];
-        let iter = gen();
+        const values: string[] = [];
+        const iter = gen();
 
         for (let item of iter) {
             values.push(item);
@@ -280,8 +260,8 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
     });
 
     it("should implement next() method as suggested", () => {
-        let iterator = gen();
-        let items: IteratorResult<string>[] = [];
+        const iterator = gen();
+        const items: IteratorResult<string>[] = [];
         let item: IteratorResult<string>;
 
         // Passing value to the next() method should have no effect.
@@ -299,30 +279,23 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
     });
 
     it("should implement return() method as suggested", () => {
-        let iterator = gen();
-        let result = iterator.return("Hello");
+        const iterator = gen();
+        const result = iterator.return("Hello");
 
         assert.deepStrictEqual(result, { value: "Hello", done: true });
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
 
     it("should implement throw() method as suggested", () => {
-        let iterator = gen();
-        let err: Error;
+        const iterator = gen();
+        const [err] = jsext.try(() => iterator.throw(new Error("Error thrown")));
 
-        try {
-            iterator.throw(new Error("Error thrown"));
-        } catch (e) {
-            err = e;
-        }
-
-        assert.ok(err instanceof Error);
-        assert.strictEqual(err.message, "Error thrown");
+        assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
     });
 
     it("should throw and catch error as expected", async () => {
-        let gen = create((erred) => {
+        const gen = create((erred) => {
 
             if (erred)
                 throw new Error("Error thrown");
@@ -330,27 +303,27 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
             return "Hello, World!";
         });
 
-        let err: Error;
+        let err: Error | undefined;
 
         try {
             await gen(true);
         } catch (e) {
-            err = e;
+            err = e as any;
         }
 
         assert.ok(err instanceof Error);
         assert.strictEqual(err.message, "Error thrown");
 
-        let iterator = gen(true);
-        let err2: Error;
+        const iterator = gen(true);
+        let err2: Error | undefined;
         let looped = false;
 
         try {
-            for (let item of iterator) {
+            for (const item of iterator) {
                 looped = !!item;
             }
         } catch (e) {
-            err2 = e;
+            err2 = e as any;
         }
 
         assert.ok(!looped);
@@ -358,7 +331,7 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
         assert.strictEqual(err2.message, "Error thrown");
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
 
-        let err3: Error = await gen(true).catch(err => err);
+        const err3: Error = await gen(true).catch(err => err);
         assert.ok(err3 instanceof Error);
         assert.strictEqual(err3.message, "Error thrown");
     });
