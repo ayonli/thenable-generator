@@ -19,8 +19,8 @@
         "typescript": "^4.9.5"
     },
     "scripts": {
-        "build:cjs": "tsc --module commonjs --target es2015 --outDir cjs --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
-        "build:esm": "tsc --module esnext --target es2015 --outDir esm --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
+        "build:cjs": "tsc --module commonjs --target es2015 --moduleResolution node --outDir cjs --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
+        "build:esm": "tsc --module esnext --target es2015 --moduleResolution node --outDir esm --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
         "build": "npm run build:cjs && npm run build:esm",
         "prepublishOnly": "npm run build",
         "test": "mocha -r ts-node/register *.test.ts",

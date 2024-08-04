@@ -160,13 +160,13 @@ export const ThenableGeneratorFunction = (function (fn) {
     anonymous.__proto__ = this;
     return anonymous;
 });
-ThenableGeneratorFunction.create = function create(fn) {
-    return new ThenableGeneratorFunction(fn);
-};
 Object.setPrototypeOf(ThenableGeneratorFunction, Function);
 Object.setPrototypeOf(ThenableGeneratorFunction.prototype, Function.prototype);
-export const create = ThenableGeneratorFunction.create;
+export function create(fn) {
+    return new ThenableGeneratorFunction(fn);
+}
 export default create;
+ThenableGeneratorFunction.create = create;
 function isAsyncGenerator(obj) {
     return obj !== null
         && typeof obj === "object"
