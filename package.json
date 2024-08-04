@@ -4,6 +4,7 @@
     "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
     "main": "cjs/index.js",
     "module": "esm/index.js",
+    "types": "esm/index.d.ts",
     "exports": {
         "require": "./cjs/index.js",
         "import": "./esm/index.js"
@@ -20,7 +21,7 @@
     },
     "scripts": {
         "build:cjs": "tsc --module commonjs --target es2015 --moduleResolution node --outDir cjs --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
-        "build:esm": "tsc --module esnext --target es2015 --moduleResolution node --outDir esm --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
+        "build:esm": "tsc --module esnext --target es2015 --moduleResolution node --outDir esm --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns --declaration index.ts",
         "build": "npm run build:cjs && npm run build:esm",
         "prepublishOnly": "npm run build",
         "test": "mocha -r ts-node/register *.test.ts",
