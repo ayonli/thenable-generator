@@ -6,7 +6,7 @@ import create, {
 import { describe, it } from "mocha";
 import * as assert from "assert";
 import * as check from "check-iterable";
-import jsext from "@ayonli/jsext";
+import _try from "@ayonli/jsext/try";
 
 describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
     const gen = create(function* (...args: string[]) {
@@ -73,7 +73,7 @@ describe("Create ThenableGeneratorFunction by a GeneratorFunction", () => {
 
     it("should implement throw() method as suggested", () => {
         const iterator = gen();
-        const [err] = jsext.try(() => iterator.throw(new Error("Error thrown")));
+        const [err] = _try(() => iterator.throw(new Error("Error thrown")));
 
         assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
@@ -149,7 +149,7 @@ describe("Create ThenableGeneratorFunction by a AsyncGeneratorFunction", () => {
 
     it("should implement throw() method as suggested", async () => {
         const iterator = gen();
-        const [err] = await jsext.try(iterator.throw(new Error("Error thrown")));
+        const [err] = await _try(iterator.throw(new Error("Error thrown")));
 
         assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(await iterator.next(), { value: void 0, done: true });
@@ -220,7 +220,7 @@ describe("Create ThenableGeneratorFunction by an AsyncFunction", () => {
 
     it("should implement throw() method as suggested", async () => {
         const iterator = gen();
-        const [err] = await jsext.try(iterator.throw(new Error("Error thrown")));
+        const [err] = await _try(iterator.throw(new Error("Error thrown")));
 
         assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(await iterator.next(), { value: void 0, done: true });
@@ -288,7 +288,7 @@ describe("Create ThenableGeneratorFunction by a Function", () => {
 
     it("should implement throw() method as suggested", () => {
         const iterator = gen();
-        const [err] = jsext.try(() => iterator.throw(new Error("Error thrown")));
+        const [err] = _try(() => iterator.throw(new Error("Error thrown")));
 
         assert.deepStrictEqual(err, new Error("Error thrown"));
         assert.deepStrictEqual(iterator.next(), { value: void 0, done: true });
