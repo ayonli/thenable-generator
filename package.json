@@ -10,7 +10,7 @@
         "import": "./esm/index.js"
     },
     "devDependencies": {
-        "@ayonli/jsext": "^0.9.54",
+        "@ayonli/jsext": "^0.9.56",
         "@types/mocha": "^5.2.7",
         "@types/node": "^22.1.0",
         "check-iterable": "^1.0.5",
