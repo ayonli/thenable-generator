@@ -1,14 +1,14 @@
 {
     "name": "thenable-generator",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Create generators implemented the PromiseLike interface so that they can be awaited in async contexts.",
     "main": "cjs/index.js",
     "module": "esm/index.js",
-    "types": "esm/index.d.ts",
+    "types": "cjs/index.d.ts",
     "exports": {
         "require": "./cjs/index.js",
         "import": "./esm/index.js",
-        "types": "./esm/index.d.ts"
+        "types": "./cjs/index.d.ts"
     },
     "devDependencies": {
         "@ayonli/jsext": "^0.9.56",
@@ -21,10 +21,8 @@
         "typescript": "^4.9.5"
     },
     "scripts": {
-        "build:cjs": "tsc --module commonjs --target es2015 --moduleResolution node --outDir cjs --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns index.ts",
-        "build:esm": "tsc --module esnext --target es2015 --moduleResolution node --outDir esm --sourceMap --strict --noImplicitThis --noImplicitAny --noImplicitReturns --declaration index.ts",
-        "build": "npm run build:cjs && npm run build:esm",
-        "prepublishOnly": "npm run build",
+        "build": "tsc --module esnext --outDir esm && tsc --module commonjs --outDir cjs --declaration && node postbuild.js",
+        "prepack": "npm run build",
         "test": "mocha -r ts-node/register *.test.ts",
         "test:bun": "bun run ./node_modules/mocha/bin/mocha *.test.ts"
     },
